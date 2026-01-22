@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blender Market - Aperçu des Assets</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            color: white;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .section-header h2 {
+            color: white;
+            font-size: 1.8em;
+            letter-spacing: 2px;
+            margin: 0;
+        }
+
+        /* Carousel Container */
+        .carousel-wrapper {
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .carousel-label {
+            font-size: 1em;
+            color: #e0e0e0;
+            margin-bottom: 10px;
+            padding-left: 5px;
+            font-weight: 500;
+        }
+
+        .carousel-container {
+            position: relative;
+            overflow: hidden;
+            padding: 10px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .carousel-container:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .carousel-track-container {
+            overflow: hidden;
+        }
+
+        .carousel-track {
+            display: flex;
+            gap: 12px;
+            cursor: grab;
+            user-select: none;
+            transition: transform 0.1s ease-out;
+            width: max-content;
+        }
+
+        .carousel-track:active {
+            cursor: grabbing;
+        }
+
+        .carousel-item {
+            min-width: 160px;
+            height: 160px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .carousel-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            z-index: 10;
+        }
+
+        .carousel-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
+        }
+
+        /* Thin separator line between carousels */
+        .carousel-separator {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.15);
+            margin: 25px 0;
+            width: 100%;
+        }
+
+        .carousel-separator-thin {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.08);
+            margin: 15px 0;
+            width: 100%;
+        }
+
+        /* Navigation arrows */
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10;
+            opacity: 1;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .carousel-nav:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .carousel-nav.prev {
+            left: 10px;
+        }
+
+        .carousel-nav.next {
+            right: 10px;
+        }
+
+        .carousel-nav svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+
+        /* GIFs Grid */
+        .gifs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+            max-width: 100%;
+        }
+
+        .gif-item {
+            border-radius: 12px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease;
+            max-width: 100%;
+        }
+
+        .gif-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .gif-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            max-width: 100%;
+        }
+
+        /* Subsection Styles */
+        .subsection {
+            margin-top: 30px;
+            padding-top: 20px;
+        }
+
+        .subsection-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .subsection-header h3 {
+            color: #e0e0e0;
+            font-size: 1.3em;
+            letter-spacing: 1px;
+            margin: 0 0 10px 0;
+        }
+
+        /* Demo Section */
+        .demo-container {
+            margin-top: 30px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .demo-container iframe {
+            width: 100%;
+            height: 500px;
+            border: none;
+            display: block;
+        }
+
+        /* Navigation Dots */
+        .nav-dots {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .nav-dot:hover,
+        .nav-dot.active {
+            background: white;
+            transform: scale(1.2);
+        }
+
+        /* Smooth Scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Drag indicator */
+        .drag-hint {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.75em;
+            color: rgba(255, 255, 255, 0.4);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .carousel-container:hover .drag-hint {
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .gifs-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .carousel-item {
+                min-width: 140px;
+                height: 140px;
+            }
+
+            .nav-dots {
+                display: none;
+            }
+
+            .carousel-nav {
+                width: 32px;
+                height: 32px;
+            }
+
+            .carousel-nav svg {
+                width: 16px;
+                height: 16px;
+            }
+        }
+
+        /* Light section specific (first section with grey background) */
+        .section:first-of-type {
+            background: #e0e0e0;
+        }
+
+        .section:first-of-type .section-header h2 {
+            color: #333;
+        }
+
+        .section:first-of-type .subsection-header h3 {
+            color: #444;
+        }
+
+        .section:first-of-type .carousel-item {
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .section:first-of-type .carousel-separator {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .section:first-of-type .carousel-separator-thin {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .section:first-of-type .carousel-container {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .section:first-of-type .carousel-nav {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .section:first-of-type .carousel-nav:hover {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .section:first-of-type .carousel-nav svg {
+            fill: #333;
+        }
+
+        .section:first-of-type .drag-hint {
+            color: rgba(0, 0, 0, 0.4);
+        }
+
+        .section:first-of-type .carousel-label {
+            color: #444;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Blender Market</h1>
+            <p>Collection d'Assets Interactifs</p>
+        </header>
+
+        <!-- LIGHT Section -->
+        <div class="section" id="light-section">
+            <div class="section-header">
+                <h2>LIGHT</h2>
+            </div>
+
+            <!-- Main Light Carousel -->
+            <div class="carousel-wrapper">
+                <div class="carousel-label">LIGHT Collection</div>
+                <div class="carousel-container">
+                    <button class="carousel-nav prev" aria-label="Précédent">
+                        <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                    </button>
+                    <div class="carousel-track-container">
+                        <div class="carousel-track" data-total="9">
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/d5e584d28152fcb598342dee40ef2605.jpg" alt="Light 1"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/9e1c253d64bc86dd2db616751d8a0ca9.jpg" alt="Light 2"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/f51a15d816255de162401cbfaace5c47.jpg" alt="Light 3"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/9c8051a6e863bc9b008514cb46944e96.jpg" alt="Light 4"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/efc0406854f2cb41e65ef99558bfa8ed.jpg" alt="Light 5"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/97a96c488fac7641d460f27ab715a063.jpg" alt="Light 6"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/0d83eae76098a320e24b47e6d441d328.jpg" alt="Light 7"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/b0c43da0f27e894a2c525f23c90cbe2e.jpg" alt="Light 8"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/72f33cb770c8b972ebb34c5b3b5e04a8.jpg" alt="Light 9"></div>
+                        </div>
+                    </div>
+                    <button class="carousel-nav next" aria-label="Suivant">
+                        <svg viewBox="0 0 24 24"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
+                    </button>
+                    <div class="drag-hint">Glisser pour déplacer</div>
+                </div>
+            </div>
+
+            <!-- Thin separator line -->
+            <div class="carousel-separator-thin"></div>
+
+            <!-- GIFs Grid -->
+            <div class="gifs-grid">
+                <div class="gif-item">
+                    <img src="https://assets.superhivemarket.com/cache/e4d5832281a3a25fed57ebeda7191df0.gif" alt="Light Animation 1">
+                </div>
+                <div class="gif-item">
+                    <img src="https://assets.superhivemarket.com/cache/7f0897a094343a4d506c9e46d322e444.gif" alt="Light Animation 2">
+                </div>
+            </div>
+
+            <!-- Thin separator line -->
+            <div class="carousel-separator"></div>
+
+            <!-- Basic Light Subsection -->
+            <div class="subsection">
+                <div class="subsection-header">
+                    <h3>BASIC LIGHT</h3>
+                </div>
+                <div class="carousel-wrapper">
+                    <div class="carousel-container">
+                        <button class="carousel-nav prev" aria-label="Précédent">
+                            <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                        </button>
+                        <div class="carousel-track-container">
+                            <div class="carousel-track" data-total="8">
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/20972e16ef180a60f85f8af78dfc7a42.jpg" alt="Basic Light 1"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/88e38b2313d9ec9d19dae6d0d90c9da0.jpg" alt="Basic Light 2"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/d389c9ee8518b3102e75db75485b6b5d.jpg" alt="Basic Light 3"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/faa4296cb1363f0d9f6845eaa13117bf.jpg" alt="Basic Light 4"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/895003491ab745ce9ce0c3af702f8e88.jpg" alt="Basic Light 5"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/6f7c83d31b7b705297712315fcd98e00.jpg" alt="Basic Light 6"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/d561a87f8c56ebddaf1e76241427285a.jpg" alt="Basic Light 7"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/d900f15f066866a05f752bf6fb171998.jpg" alt="Basic Light 8"></div>
+                            </div>
+                        </div>
+                        <button class="carousel-nav next" aria-label="Suivant">
+                            <svg viewBox="0 0 24 24"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
+                        </button>
+                        <div class="drag-hint">Glisser pour déplacer</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thin separator line -->
+            <div class="carousel-separator"></div>
+
+            <!-- Decoration Light Subsection -->
+            <div class="subsection">
+                <div class="subsection-header">
+                    <h3>DECORATION LIGHT</h3>
+                </div>
+                <div class="carousel-wrapper">
+                    <div class="carousel-container">
+                        <button class="carousel-nav prev" aria-label="Précédent">
+                            <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                        </button>
+                        <div class="carousel-track-container">
+                            <div class="carousel-track" data-total="8">
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/779b5f50ae697bcec2a6b4b9044e2455.jpg" alt="Decoration Light 1"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/1e147ec2ff4f1a1d3a7bd10ff3696ec9.jpg" alt="Decoration Light 2"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/be6b2324df2d783e678028b187466a24.jpg" alt="Decoration Light 3"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/3c6b7896fa47ccf3d9516e3a70972d95.jpg" alt="Decoration Light 4"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/e2270b49fbd29f2a67ecf2a113c5cabf.jpg" alt="Decoration Light 5"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/5b575347009d3d7822bbfd855d5b74a7.jpg" alt="Decoration Light 6"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/508dc13dbc6b12fae91eefb133d22a6d.jpg" alt="Decoration Light 7"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/3d2060f01edbbf62b6daf71770a6b0ef.jpg" alt="Decoration Light 8"></div>
+                            </div>
+                        </div>
+                        <button class="carousel-nav next" aria-label="Suivant">
+                            <svg viewBox="0 0 24 24"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
+                        </button>
+                        <div class="drag-hint">Glisser pour déplacer</div>
+                    </div>
+                </div>
+                <div class="gif-item" style="margin-top: 20px;">
+                    <img src="https://assets.superhivemarket.com/cache/8b2f3c8eb75900938163033b86ddf381.gif" alt="Decoration Light Animation">
+                </div>
+            </div>
+
+            <!-- Thin separator line -->
+            <div class="carousel-separator"></div>
+
+            <!-- Image Source Subsection -->
+            <div class="subsection">
+                <div class="subsection-header">
+                    <h3>IMAGE SOURCE</h3>
+                </div>
+                <div class="carousel-wrapper">
+                    <div class="carousel-container">
+                        <button class="carousel-nav prev" aria-label="Précédent">
+                            <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                        </button>
+                        <div class="carousel-track-container">
+                            <div class="carousel-track" data-total="22">
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/a5ecefc1638680b69f0f6ace8f4503f5.png" alt="Source 1"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/b4d0a5bc6c998da7d950007165ecdc34.png" alt="Source 2"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/0564359ea07d98f804972a86e13fc3b5.png" alt="Source 3"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/6e6ac4477c16233144f1bb68e534c2d5.png" alt="Source 4"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/d3b062207ac272ff1653d80cf9f56c77.png" alt="Source 5"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/ee309ddc9ac9c13fd7e1f7751a965f2a.png" alt="Source 6"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/9e2fb305d701385ddc1716156d3c7763.png" alt="Source 7"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/bc239aad010d4145354f531c9c483870.png" alt="Source 8"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/063fdca1f6f5bc62e4164b5911a5b719.png" alt="Source 9"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/c18cd868198f3edcafd1de151e8483bd.png" alt="Source 10"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/951d2e1a77c1761b18453d9c165e2783.png" alt="Source 11"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/be0f834a85938ec46ee9127481bfd671.png" alt="Source 12"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/686ad3070f0706d4711c3e2014cac67b.png" alt="Source 13"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/a12e8b6ecb688d9828dd3190c733e0a5.png" alt="Source 14"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/a0731eeff7f13f89520b9e3e497562b5.png" alt="Source 15"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/f47bb12d438761c6bf5265a41c781711.png" alt="Source 16"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/eb3a42d802e83b86c74096413f69a3a9.png" alt="Source 17"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/a11667d0c26f1f371e893bfd8219b7ec.png" alt="Source 18"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/09c7f0f74080cda6d1387a0fb2b73fc5.png" alt="Source 19"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/b269f5c2b0e827edb0bc7e52d7f8d577.png" alt="Source 20"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/1baa861d7938609cdc8a7bfe44ab25e1.png" alt="Source 21"></div>
+                                <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/505cbe8aeb3198a73871ee8ed649427f.png" alt="Source 22"></div>
+                            </div>
+                        </div>
+                        <button class="carousel-nav next" aria-label="Suivant">
+                            <svg viewBox="0 0 24 24"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
+                        </button>
+                        <div class="drag-hint">Glisser pour déplacer</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Demo Section -->
+            <div class="demo-container">
+                <iframe src="https://at-design.github.io/slidebar/" title="Demo interactive - Light Pack"></iframe>
+            </div>
+        </div>
+
+        <!-- CHAIR ASSET Section -->
+        <div class="section" id="chair-section">
+            <div class="section-header">
+                <h2>CHAIR ASSET</h2>
+            </div>
+
+            <div class="carousel-wrapper">
+                <div class="carousel-label">CHAIR Collection</div>
+                <div class="carousel-container">
+                    <button class="carousel-nav prev" aria-label="Précédent">
+                        <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                    </button>
+                    <div class="carousel-track-container">
+                        <div class="carousel-track" data-total="30">
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/1f71842433ff27dfb182ef5729da561f.jpg" alt="Chair 1"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/4b6f2630d1a6fa2681b71bbb880e5f8d.jpg" alt="Chair 2"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/a214756368cfd9c7c7aa00ae499c2547.jpg" alt="Chair 3"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/acbfc0da3578e37fbaeb2bb130724cac.jpg" alt="Chair 4"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/aabdc1d02a0d34ea3c158c1561c01e64.jpg" alt="Chair 5"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/2c894ad9b00b1b3ebf257f41c4116c78.jpg" alt="Chair 6"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/ae86c6453b63cb370d5b9235ad04fbcb.jpg" alt="Chair 7"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/26cb571f153234abe50a34e61d439ee5.jpg" alt="Chair 8"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/005bc4b6e88029fdcd1fd0adf264a3c8.jpg" alt="Chair 9"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/8d4af69b74c28bd7210c317a4f8e5761.jpg" alt="Chair 10"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/6c2c7e85d64905ad13e3984b92bb1641.jpg" alt="Chair 11"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/68378f5458e5151cb27c8df0012ab0ba.jpg" alt="Chair 12"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/f9b9057e246313200f61655fecf5866d.jpg" alt="Chair 13"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/14465a5fefd51cee563af88c12b59093.jpg" alt="Chair 14"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/467545dbcc6fdf41c9a306bb9b0fbd9e.jpg" alt="Chair 15"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/fdf74b9f3f4b49311979291156a5a914.jpg" alt="Chair 16"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/c251c92086be34f82993e7330b38c93a.jpg" alt="Chair 17"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/7566a3e363bced23db885aa40840ad3b.jpg" alt="Chair 18"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/fd17b83b08927dbbc20d7bc3d742e739.jpg" alt="Chair 19"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/2bc2a35ff8d0b8bf97db447255bb67de.jpg" alt="Chair 20"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/630bc1d3d56d4b77ab3b181de6842448.jpg" alt="Chair 21"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/8f86d3f5a374b2af6f8f6f3df323b7cd.jpg" alt="Chair 22"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/db7630135f0de8fa9274d11a05293ff5.jpg" alt="Chair 23"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/0ca5a373e110eb04619729e1a2ee9501.jpg" alt="Chair 24"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/77efbbb5f6e234a13ca6ba250feea1e7.jpg" alt="Chair 25"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/8e9a30ea2b77f9883a78d0c8367a010d.jpg" alt="Chair 26"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/f2543c6c2e5463d07f44b6f3e19edf81.jpg" alt="Chair 27"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/431680e288fc16d6a2dc63e2af666ca2.jpg" alt="Chair 28"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/6c1d932d00f488bb0f243fe9427e6fbe.jpg" alt="Chair 29"></div>
+                            <div class="carousel-item"><img src="https://assets.superhivemarket.com/cache/1b0535a0dda5bc46d2b9c7ec4b36d405.jpg" alt="Chair 30"></div>
+                        </div>
+                    </div>
+                    <button class="carousel-nav next" aria-label="Suivant">
+                        <svg viewBox="0 0 24 24"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
+                    </button>
+                    <div class="drag-hint">Glisser pour déplacer</div>
+                </div>
+            </div>
+
+            <!-- Thin separator line -->
+            <div class="carousel-separator"></div>
+
+            <div class="gifs-grid">
+                <div class="gif-item">
+                    <img src="https://assets.superhivemarket.com/cache/f5231a01593a14cc29e63f2892b86c1a.gif" alt="Chair Animation 1">
+                </div>
+                <div class="gif-item">
+                    <img src="https://assets.superhivemarket.com/cache/e764fda0d18a1b6d2f14b4462dc4d214.gif" alt="Chair Animation 2">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Dots -->
+    <div class="nav-dots">
+        <div class="nav-dot active" data-section="light-section" title="Light Section"></div>
+        <div class="nav-dot" data-section="chair-section" title="Chair Asset Section"></div>
+    </div>
+
+    <script>
+        // Interactive Carousel Class
+        class InteractiveCarousel {
+            constructor(track) {
+                this.track = track;
+                this.container = track.closest('.carousel-container');
+                this.trackContainer = track.closest('.carousel-track-container');
+                this.items = track.querySelectorAll('.carousel-item');
+                this.totalItems = parseInt(track.dataset.total);
+                this.gap = 12;
+                this.itemWidth = 160;
+                this.currentPosition = 0;
+                this.isDragging = false;
+                this.startX = 0;
+                this.startPosition = 0;
+                this.velocity = 0;
+                this.lastX = 0;
+                this.lastTime = 0;
+                this.animationId = null;
+
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.setupNavigation();
+            }
+
+            setupEventListeners() {
+                // Mouse events
+                this.track.addEventListener('mousedown', (e) => this.startDrag(e));
+                document.addEventListener('mousemove', (e) => this.drag(e));
+                document.addEventListener('mouseup', () => this.endDrag());
+
+                // Touch events
+                this.track.addEventListener('touchstart', (e) => this.startDrag(e), { passive: true });
+                document.addEventListener('touchmove', (e) => this.drag(e), { passive: false });
+                document.addEventListener('touchend', () => this.endDrag());
+
+                // Wheel event for scrolling
+                this.container.addEventListener('wheel', (e) => this.handleWheel(e), { passive: false });
+
+                // Prevent image drag
+                this.items.forEach(item => {
+                    item.addEventListener('dragstart', (e) => e.preventDefault());
+                });
+            }
+
+            setupNavigation() {
+                const prevBtn = this.container.querySelector('.carousel-nav.prev');
+                const nextBtn = this.container.querySelector('.carousel-nav.next');
+
+                if (prevBtn) {
+                    prevBtn.addEventListener('click', () => this.scrollByItems(-3));
+                }
+                if (nextBtn) {
+                    nextBtn.addEventListener('click', () => this.scrollByItems(3));
+                }
+            }
+
+            startDrag(e) {
+                if (e.type === 'touchstart') {
+                    this.startX = e.touches[0].clientX;
+                } else {
+                    this.startX = e.clientX;
+                }
+
+                this.isDragging = true;
+                this.startPosition = this.currentPosition;
+                this.velocity = 0;
+                this.lastX = this.startX;
+                this.lastTime = Date.now();
+
+                this.track.style.transition = 'none';
+                this.track.style.cursor = 'grabbing';
+            }
+
+            drag(e) {
+                if (!this.isDragging) return;
+
+                e.preventDefault();
+
+                let currentX;
+                if (e.type === 'touchmove') {
+                    currentX = e.touches[0].clientX;
+                } else {
+                    currentX = e.clientX;
+                }
+
+                // Invert delta to fix drag direction
+                const deltaX = this.startX - currentX;
+                const now = Date.now();
+                const deltaTime = now - this.lastTime;
+
+                if (deltaTime > 0) {
+                    this.velocity = (this.lastX - currentX) / deltaTime;
+                }
+
+                this.lastX = currentX;
+                this.lastTime = now;
+
+                this.currentPosition = this.startPosition + deltaX;
+                this.updatePosition();
+            }
+
+            endDrag() {
+                if (!this.isDragging) return;
+
+                this.isDragging = false;
+                this.track.style.cursor = 'grab';
+                this.track.style.transition = 'transform 0.3s ease-out';
+
+                // Apply momentum with boundary constraints
+                this.applyMomentum();
+            }
+
+            applyMomentum() {
+                const maxPosition = this.getMaxPosition();
+                const minPosition = 0;
+
+                // Apply velocity to position (inverted for correct direction)
+                this.currentPosition -= this.velocity * 50;
+
+                // Clamp to boundaries
+                if (this.currentPosition < minPosition) {
+                    this.currentPosition = minPosition;
+                    this.velocity = 0;
+                }
+                if (this.currentPosition > maxPosition) {
+                    this.currentPosition = maxPosition;
+                    this.velocity = 0;
+                }
+
+                this.updatePosition();
+            }
+
+            handleWheel(e) {
+                e.preventDefault();
+                const scrollAmount = e.deltaY > 0 ? -100 : 100;
+                this.scrollByPixels(scrollAmount);
+            }
+
+            scrollByItems(itemCount) {
+                const scrollAmount = itemCount * (this.itemWidth + this.gap);
+                this.scrollByPixels(scrollAmount);
+            }
+
+            scrollByPixels(amount) {
+                const maxPosition = this.getMaxPosition();
+                const minPosition = 0;
+
+                this.currentPosition += amount;
+
+                // Smooth boundary bounce
+                if (this.currentPosition < minPosition) {
+                    this.currentPosition = minPosition;
+                }
+                if (this.currentPosition > maxPosition) {
+                    this.currentPosition = maxPosition;
+                }
+
+                this.track.style.transition = 'transform 0.3s ease-out';
+                this.updatePosition();
+            }
+
+            getMaxPosition() {
+                const totalWidth = this.totalItems * (this.itemWidth + this.gap) - this.gap;
+                const containerWidth = this.trackContainer.offsetWidth;
+                return Math.max(0, totalWidth - containerWidth);
+            }
+
+            updatePosition() {
+                this.track.style.transform = `translateX(-${this.currentPosition}px)`;
+            }
+        }
+
+        // Initialize all carousels
+        document.querySelectorAll('.carousel-track').forEach(track => {
+            new InteractiveCarousel(track);
+        });
+
+        // Navigation dots functionality
+        const navDots = document.querySelectorAll('.nav-dot');
+        const sections = document.querySelectorAll('.section');
+
+        navDots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                const sectionId = dot.getAttribute('data-section');
+                const section = document.getElementById(sectionId);
+                section.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // Update active dot on scroll
+        const observerOptions = {
+            root: null,
+            rootMargin: '-50% 0px -50% 0px',
+            threshold: 0
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const sectionId = entry.target.id;
+                    navDots.forEach(dot => {
+                        dot.classList.remove('active');
+                        if (dot.getAttribute('data-section') === sectionId) {
+                            dot.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+
+        // Add subtle hover effect to carousel items
+        document.querySelectorAll('.carousel-item').forEach(item => {
+            item.addEventListener('mousemove', (e) => {
+                const rect = item.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = (y - centerY) / 20;
+                const rotateY = (centerX - x) / 20;
+                item.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+            });
+            item.addEventListener('mouseleave', () => {
+                item.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>
